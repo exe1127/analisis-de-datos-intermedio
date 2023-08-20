@@ -2,6 +2,9 @@
 import pandas as pd
 from function import *
 import datetime
+from db_conect import engine
+from sqlalchemy import create_engine
+
 if __name__ == '__main__':
     # Obtener del archivo txt la key
     with open('credencial.txt', 'r') as f:
@@ -28,7 +31,8 @@ if __name__ == '__main__':
     # Se genera la normalizacion de la lista obtenida en las busquedas
     normalized_data = [normalize(entry) for entry in list]
 
-    """ # Se consolida en un dataFrame
-    consolidated_df = pd.concat(normalized_data) """
+    # Se consolida en un dataFrame
+    consolidated_df = pd.concat(normalized_data)
 
-    print(normalized_data)
+    # Insertar el DataFrame en la base de datos
+    consolidated_df.to_sql('weather_table', con=engine, if_exists='replace', index=False)

@@ -21,3 +21,4 @@ rad.json
 #Test results file
 TestResults.xml
 credencial.txt
+credenciales_db.py
