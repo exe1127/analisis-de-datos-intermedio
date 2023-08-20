@@ -28,7 +28,9 @@ if __name__ == '__main__':
             list.append(search2(lat, lon, key, tiempo_unix))
 
     # Se genera la normalizacion de la lista obtenida en las busquedas
-    normalized_data = [normalize(entry) for entry in list]
+    normalized_data = [normalize(entry,len(list)) for entry in list]
 
     # Se consolida en un dataFrame
     consolidated_df = pd.concat(normalized_data)
+
+    print(consolidated_df)

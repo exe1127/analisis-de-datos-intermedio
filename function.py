@@ -17,7 +17,7 @@ from pandas import json_normalize
         raise Exception('Error searching status code', request.status_code) """
 
 
-def search2(lat, lon, key,dt):
+def search2(lat, lon, key, dt):
     # Consulta a la appi
     url = f'{baseUrl}lat={lat}&lon={lon}&dt={dt}&appid={key}&units=metric'
 
@@ -28,36 +28,25 @@ def search2(lat, lon, key,dt):
         raise Exception('Error searching status code', request.status_code)
 
 
-def normalize(request):
+def normalize(request,index):
     # Normalizacion de la respuesta de la api
     datecols = ['dt', 'sunrise', 'sunset']
     records = []
+
     # Utiliza json_normalize para extraer y normalizar los datos
-    weather = json_normalize(request['weather'])
-    data = json_normalize(request['data'])
-    main = json_normalize(request['main'])
-    wind = json_normalize(request['wind'])
-    clouds = json_normalize(request['clouds'])
-    sys = json_normalize(request['sys'])
-
-    # Crea un registro combinando todos los datos normalizados
-    """ record = {
-        'id': request['id'],
-        'name': request['name'],
-        'cod': request['cod'],
-        'dt': pd.to_datetime(request['dt'], unit='s'),
-        **weather.iloc[0], **coord.iloc[0], **main.iloc[0], **wind.iloc[0], **clouds.iloc[0], **sys.iloc[0]
-    } """
-
-    records.append(record)
+    star = json_normalize(request)
+    star = star.drop("data", axis=1)
+    weather = json_normalize(request["data"][0]["weather"][0])
+    data = json_normalize(request['data'][0])
+    data = data.drop("weather", axis=1)
 
     # Se genera el dataFrame correspondiente
-    result_df = pd.DataFrame(records)
+    df = pd.concat([star, data, weather,index], axis=1)
 
     # Establece el índice del DataFrame en la columna 'id' para evitar errores
-    result_df = result_df.set_index('id')
+    df = df.set_index('index')
 
     # Convierte las columnas de fechas a objetos de fecha y hora
-    result_df[datecols] = result_df[datecols].apply(pd.to_datetime)
+    df[datecols] = df[datecols].apply(pd.to_datetime)
 
-    return result_df
+    return df
