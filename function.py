@@ -5,7 +5,7 @@ import pandas as pd
 from pandas import json_normalize
 
 
-def search(city, key):
+""" def search(city, key):
 
     # Consulta a la appi
     url = f'{baseUrl}q={city}&appid={key}'
@@ -14,12 +14,12 @@ def search(city, key):
     if request.status_code == 200:
         return request.json()
     else:
-        raise Exception('Error searching status code', request.status_code)
+        raise Exception('Error searching status code', request.status_code) """
 
 
-def search2(lat, lon, key):
+def search2(lat, lon, key,dt):
     # Consulta a la appi
-    url = f'{baseUrl}lat={lat}&lon={lon}&appid={key}&units=metric'
+    url = f'{baseUrl}lat={lat}&lon={lon}&dt={dt}&appid={key}&units=metric'
 
     request = requests.get(url)
     if request.status_code == 200:
@@ -34,20 +34,20 @@ def normalize(request):
     records = []
     # Utiliza json_normalize para extraer y normalizar los datos
     weather = json_normalize(request['weather'])
-    coord = json_normalize(request['coord'])
+    data = json_normalize(request['data'])
     main = json_normalize(request['main'])
     wind = json_normalize(request['wind'])
     clouds = json_normalize(request['clouds'])
     sys = json_normalize(request['sys'])
 
     # Crea un registro combinando todos los datos normalizados
-    record = {
+    """ record = {
         'id': request['id'],
         'name': request['name'],
         'cod': request['cod'],
         'dt': pd.to_datetime(request['dt'], unit='s'),
         **weather.iloc[0], **coord.iloc[0], **main.iloc[0], **wind.iloc[0], **clouds.iloc[0], **sys.iloc[0]
-    }
+    } """
 
     records.append(record)
 
