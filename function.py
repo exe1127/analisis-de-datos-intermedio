@@ -5,25 +5,15 @@ import pandas as pd
 from pandas import json_normalize
 import json
 
-""" def search(city, key):
 
-    # Consulta a la appi
-    url = f'{baseUrl}q={city}&appid={key}'
-
-    request = requests.get(url)
-    if request.status_code == 200:
-        return request.json()
-    else:
-        raise Exception('Error searching status code', request.status_code) """
-
-
-def search2(lat, lon, key):
+def search(lat, lon, key):
     # Consulta a la appi
     url = f'{baseUrl}lat={lat}&lon={lon}&appid={key}&units=metric'
 
     request = requests.get(url)
 
     if request.status_code == 200:
+        # Restornar el resultado como un JSON
         return request.json()
     else:
         raise Exception('Error searching status code', request.status_code)
@@ -31,16 +21,15 @@ def search2(lat, lon, key):
 
 def normalize(request):
     # Normalizacion de la respuesta de la api
-    datecols = ['dt', 'sunrise', 'sunset']
 
-    # Aplanar el JSON para combinar "dt", "city_name" y subcampos de "main"
     extracted_data = []
 
     for item in request['list']:
+        # Extraer los datos y crear una nueva lista de objetos
         main_data = item['main']
         extracted_item = {
-            'dt': item['dt'],
-            'city_name': data['city']['name'],
+            'dt': datetime.fromtimestamp(item['dt']),
+            'city_name': request['city']['name'],
             'temp': main_data['temp'],
             'feels_like': main_data['feels_like'],
             'temp_min': main_data['temp_min'],
@@ -53,14 +42,7 @@ def normalize(request):
         }
         extracted_data.append(extracted_item)
 
-# Crear el DataFrame a partir de la información extraída
+    # Crear el DataFrame a partir de la información extraída
     df = pd.DataFrame(extracted_data)
 
-    """  records.append(df) """
-
-    """ # Establece el índice del DataFrame en la columna 'id' para evitar errores
-    df = df.set_index('index')
- """
-    """  # Convierte las columnas de fechas a objetos de fecha y hora
-    df[datecols] = df[['dt']].apply(pd.to_datetime) """
     return df
